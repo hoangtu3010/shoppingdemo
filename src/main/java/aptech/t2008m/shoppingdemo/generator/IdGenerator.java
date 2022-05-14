@@ -1,5 +1,7 @@
 package aptech.t2008m.shoppingdemo.generator;
 
+import aptech.t2008m.shoppingdemo.entity.Product;
+import aptech.t2008m.shoppingdemo.until.StringHelper;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -28,6 +30,11 @@ public class IdGenerator implements IdentifierGenerator {
                 .mapToLong(Long::parseLong)
                 .max()
                 .orElse(0L);
+
+        if (obj.getClass().getSimpleName().equals("Product")){
+            Product product = (Product) obj;
+            product.setSlug(StringHelper.toSlug(product.getName() + " " + prefix + "_" + (max + 1)));
+        }
 
         return prefix + "_" + (max + 1);
     }

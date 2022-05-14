@@ -34,5 +34,6 @@ public class Order extends BaseEntity {
     private String shipName;
     private String shipAddress;
     private String shipPhone;
+    private String shipNote;
     private int status;
 }

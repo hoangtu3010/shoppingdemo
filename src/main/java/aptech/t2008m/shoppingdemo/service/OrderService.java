@@ -5,6 +5,7 @@ import aptech.t2008m.shoppingdemo.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class OrderService {
 
     public boolean addProductToOrder(Product product, Order order, Account account){
         try {
+            BigDecimal totalPrice = new BigDecimal(0);
+
             Set<OrderDetail> orderDetails = order.getOrderDetails();
             if (orderDetails == null){
                 orderDetails = new HashSet<>();
@@ -42,11 +45,16 @@ public class OrderService {
             orderDetail.setId(new OrderDetailId(product.getId(), order.getId()));
             orderDetail.setProduct(product);
             orderDetail.setOrder(order);
-            orderDetail.setQuantity(1);
             orderDetail.setUnitPrice(product.getPrice());
             orderDetails.add(orderDetail);
             order.setAccountId(account.getId());
             order.setOrderDetails(orderDetails);
+
+            for (OrderDetail od :
+                    order.getOrderDetails()) {
+                totalPrice.add(new BigDecimal(od.getQuantity()).multiply(od.getUnitPrice()));
+            }
+            order.setTotalPrice(totalPrice);
             orderRepository.save(order);
         }catch (Exception ex){
             return false;

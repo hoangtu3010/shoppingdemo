@@ -1,11 +1,10 @@
 package aptech.t2008m.shoppingdemo.entity;
 
+import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
+import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -13,9 +12,12 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @ToString
 @Entity
-public class Category {
+@Table(name = "categories")
+public class Category extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    @Enumerated(EnumType.ORDINAL)
+    private ProductStatus status;
 }

@@ -1,6 +1,7 @@
 package aptech.t2008m.shoppingdemo.controller;
 
 import aptech.t2008m.shoppingdemo.entity.Product;
+import aptech.t2008m.shoppingdemo.entity.dto.ProductDTO;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,19 @@ public class ProductController {
         }
 
         Product existProduct = optionalProduct.get();
+
+
+        if (product.getStatus() == null){
+            product.setStatus(ProductStatus.ACTIVE);
+        }
+
         existProduct.setName(product.getName());
+        existProduct.setThumbnail(product.getThumbnail());
         existProduct.setDescription(product.getDescription());
         existProduct.setPrice(product.getPrice());
+        existProduct.setSlug(product.getSlug());
         existProduct.setStatus(product.getStatus());
+        existProduct.setCategoryId(product.getCategoryId());
 
         return ResponseEntity.ok(productService.save(existProduct));
     }

@@ -1,7 +1,9 @@
 package aptech.t2008m.shoppingdemo.controller;
 
+import aptech.t2008m.shoppingdemo.entity.Category;
 import aptech.t2008m.shoppingdemo.entity.Product;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
+import aptech.t2008m.shoppingdemo.service.CategoryService;
 import aptech.t2008m.shoppingdemo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,61 +15,59 @@ import java.util.Optional;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "api/v1/products")
-public class ProductController {
+@RequestMapping(path = "api/v1/categories")
+public class CategoryController {
     @Autowired
-    ProductService productService;
+    CategoryService categoryService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Product>> findAll() {
-        return ResponseEntity.ok(productService.findAll());
+    public ResponseEntity<List<Category>> findAll() {
+        return ResponseEntity.ok(categoryService.findAll());
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Product> save(@RequestBody Product product) {
-        product.setStatus(ProductStatus.ACTIVE);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
+    public ResponseEntity<Category> save(@RequestBody Category category) {
+        category.setStatus(ProductStatus.ACTIVE);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(category));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
-    public ResponseEntity<Product> update(@PathVariable String id, @RequestBody Product product) {
-        Optional<Product> optionalProduct = productService.findById(id);
+    public ResponseEntity<Category> update(@PathVariable Integer id, @RequestBody Category category) {
+        Optional<Category> optionalCategory = categoryService.findById(id);
 
-        if (!optionalProduct.isPresent()) {
+        if (!optionalCategory.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        Product existProduct = optionalProduct.get();
-        existProduct.setName(product.getName());
-        existProduct.setDescription(product.getDescription());
-        existProduct.setPrice(product.getPrice());
-        existProduct.setStatus(product.getStatus());
+        Category existCategory = optionalCategory.get();
+        existCategory.setName(category.getName());
+        existCategory.setStatus(category.getStatus());
 
-        return ResponseEntity.ok(productService.save(existProduct));
+        return ResponseEntity.ok(categoryService.save(existCategory));
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")
-    public ResponseEntity<Product> findById(@PathVariable String id) {
-        Optional<Product> optionalProduct = productService.findById(id);
+    public ResponseEntity<Category> findById(@PathVariable Integer id) {
+        Optional<Category> optionalCategory = categoryService.findById(id);
 
-        if (!optionalProduct.isPresent()) {
+        if (!optionalCategory.isPresent()) {
             ResponseEntity.notFound();
         }
 
-        return ResponseEntity.ok(optionalProduct.get());
+        return ResponseEntity.ok(optionalCategory.get());
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable String id) {
-        Optional<Product> optionalProduct = productService.findById(id);
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
+        Optional<Category> optionalCategory = categoryService.findById(id);
 
-        if (!optionalProduct.isPresent()) {
+        if (!optionalCategory.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
 
-        Product existProduct = optionalProduct.get();
-        existProduct.setStatus(ProductStatus.DELETED);
-        productService.save(existProduct);
+        Category existCategory = optionalCategory.get();
+        existCategory.setStatus(ProductStatus.DELETED);
+        categoryService.save(existCategory);
 
         return ResponseEntity.status(HttpStatus.OK).body(true);
     }

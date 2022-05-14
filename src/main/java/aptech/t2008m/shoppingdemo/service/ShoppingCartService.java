@@ -1,7 +1,7 @@
 package aptech.t2008m.shoppingdemo.service;
 
-import aptech.t2008m.shoppingdemo.entity.Product;
-import aptech.t2008m.shoppingdemo.repository.ProductRepository;
+import aptech.t2008m.shoppingdemo.entity.ShoppingCart;
+import aptech.t2008m.shoppingdemo.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,27 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductService {
+public class ShoppingCartService {
     @Autowired
-    private ProductRepository productRepository;
+    private ShoppingCartRepository shoppingCartRepository;
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public List<ShoppingCart> findAll() {
+        return shoppingCartRepository.findAll();
     }
 
-//    public Page<Product> getPage(int page, int limit){
-//        return productRepository.getPage(PageRequest.of(page, limit));
-//    }
-
-    public Optional<Product> findById(String id) {
-        return productRepository.findById(id);
+    public Optional<ShoppingCart> findById(String id) {
+        return shoppingCartRepository.findById(id);
     }
 
-    public Product save(Product account) {
-        return productRepository.save(account);
+    public ShoppingCart save(ShoppingCart account) {
+        return shoppingCartRepository.save(account);
     }
 
     public void deleteById(String id) {
-        productRepository.deleteById(id);
+        shoppingCartRepository.deleteById(id);
     }
 }

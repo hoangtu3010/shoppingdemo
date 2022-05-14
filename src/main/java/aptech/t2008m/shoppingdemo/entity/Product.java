@@ -2,6 +2,7 @@ package aptech.t2008m.shoppingdemo.entity;
 
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
+import aptech.t2008m.shoppingdemo.until.StringHelper;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -17,6 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 @Entity
 @Table(name = "products")
 public class Product extends BaseEntity {
@@ -31,10 +33,9 @@ public class Product extends BaseEntity {
     private String slug;
     @Enumerated(EnumType.ORDINAL)
     private ProductStatus status;
-    @Column(insertable = false, updatable = false)
     private Integer categoryId;
     @ManyToOne
-    @JoinColumn(name = "categoryId")
+    @JoinColumn(name = "categoryId", insertable = false, updatable = false)
     private Category category;
 //    @JsonManagedReference
 //    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
