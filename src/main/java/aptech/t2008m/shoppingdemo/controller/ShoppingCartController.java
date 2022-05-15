@@ -7,6 +7,7 @@ import aptech.t2008m.shoppingdemo.entity.ShoppingCart;
 import aptech.t2008m.shoppingdemo.entity.dto.CartItemDTO;
 import aptech.t2008m.shoppingdemo.entity.dto.ProductDTO;
 import aptech.t2008m.shoppingdemo.entity.dto.ShoppingCartDTO;
+import aptech.t2008m.shoppingdemo.entity.enums.CartItemStatus;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.service.ProductService;
 import aptech.t2008m.shoppingdemo.service.ShoppingCartService;
@@ -15,10 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -29,7 +32,7 @@ public class ShoppingCartController {
     @Autowired
     ProductService productService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, path = "/get-all")
     public ResponseEntity<List<ShoppingCart>> findAll() {
         return ResponseEntity.ok(shoppingCartService.findAll());
     }
@@ -37,13 +40,26 @@ public class ShoppingCartController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<ShoppingCart> save(@RequestBody ShoppingCartDTO shoppingCartDTO) {
         ShoppingCart shoppingCart = shoppingCartDTO.generateCart();
+
+        Optional<ShoppingCart> optionalShoppingCart = shoppingCartService.findByUserId(shoppingCartDTO.getUserId());
+
+        if (optionalShoppingCart.isPresent()) {
+            shoppingCart = optionalShoppingCart.get();
+            shoppingCart.setTotalPrice(new BigDecimal(0));
+        }
+
         Set<CartItem> setCartItem = new HashSet<>();
         for (CartItemDTO cartItemDTO :
                 shoppingCartDTO.getCartItemDTOSet()) {
             Optional<Product> optionalProduct = productService.findById(cartItemDTO.getProductId());
-            if(!optionalProduct.isPresent()){
+            if (!optionalProduct.isPresent()) {
                 break;
             }
+
+            if (cartItemDTO.getQuantity() <= 0){
+                cartItemDTO.setStatus(-1);
+            }
+
             Product product = optionalProduct.get();
             CartItem cartItem = CartItem.builder()
                     .id(new CartItemId(shoppingCart.getId(), product.getId()))
@@ -52,6 +68,8 @@ public class ShoppingCartController {
                     .quantity(cartItemDTO.getQuantity())
                     .unitPrice(product.getPrice())
                     .shoppingCart(shoppingCart)
+                    .status(cartItemDTO.getStatus())
+                    .cartItemStatus(CartItemStatus.of(cartItemDTO.getStatus()))
                     .build();
 
             shoppingCart.addTotalPrice(cartItem); // add tổng giá bigdecimal
@@ -71,5 +89,20 @@ public class ShoppingCartController {
         }
 
         return ResponseEntity.ok(shoppingCartOptional.get());
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<ShoppingCart> findByUserId(@RequestParam(defaultValue = "") String userId) {
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartService.findByUserId(userId);
+
+        if (!shoppingCartOptional.isPresent()) {
+            ResponseEntity.notFound();
+        }
+
+        ShoppingCart existShoppingCart = shoppingCartOptional.get();
+
+        existShoppingCart.setCartItems(existShoppingCart.getCartItems().stream().filter(c -> c.getStatus() == 1).collect(Collectors.toSet()));
+
+        return ResponseEntity.ok(existShoppingCart);
     }
 }

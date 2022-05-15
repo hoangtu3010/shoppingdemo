@@ -21,8 +21,12 @@ public class ShoppingCartService {
         return shoppingCartRepository.findById(id);
     }
 
-    public ShoppingCart save(ShoppingCart account) {
-        return shoppingCartRepository.save(account);
+    public Optional<ShoppingCart> findByUserId(String userId) {
+        return shoppingCartRepository.findByUserId(userId);
+    }
+
+    public ShoppingCart save(ShoppingCart shoppingCart) {
+        return shoppingCartRepository.save(shoppingCart);
     }
 
     public void deleteById(String id) {

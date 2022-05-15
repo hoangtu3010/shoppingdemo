@@ -1,10 +1,10 @@
 package aptech.t2008m.shoppingdemo.controller;
 
 import aptech.t2008m.shoppingdemo.entity.Product;
-import aptech.t2008m.shoppingdemo.entity.dto.ProductDTO;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +20,18 @@ public class ProductController {
     ProductService productService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Product>> findAll() {
-        return ResponseEntity.ok(productService.findAll());
+    public ResponseEntity<Page<Product>> getPage(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String sort,
+            @RequestParam(defaultValue = "1") int pageIndex,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        return ResponseEntity.ok(productService.getPage(keyword, sort, pageIndex, pageSize));
     }
+
+//    @RequestMapping(method = RequestMethod.GET, path = "/search")
+//    public ResponseEntity<List<Product>> getListSearch(@RequestParam(defaultValue = "") String keyword) {
+//        return ResponseEntity.ok(productService.getListSearch(keyword));
+//    }
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Product> save(@RequestBody Product product) {
@@ -41,7 +50,7 @@ public class ProductController {
         Product existProduct = optionalProduct.get();
 
 
-        if (product.getStatus() == null){
+        if (product.getStatus() == null) {
             product.setStatus(ProductStatus.ACTIVE);
         }
 

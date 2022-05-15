@@ -18,7 +18,7 @@ public class ShoppingCartDTO {
     private BigDecimal totalPrice;
     private Set<CartItemDTO> cartItemDTOSet;
 
-    public ShoppingCart generateCart(){
+    public ShoppingCart generateCart() {
         return ShoppingCart.builder()
                 .userId(this.userId)
                 .build();
