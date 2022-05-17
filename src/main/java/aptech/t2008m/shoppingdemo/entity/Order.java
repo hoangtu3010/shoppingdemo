@@ -1,6 +1,8 @@
 package aptech.t2008m.shoppingdemo.entity;
 
 import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
+import aptech.t2008m.shoppingdemo.entity.enums.CartItemStatus;
+import aptech.t2008m.shoppingdemo.entity.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity {
@@ -22,10 +25,9 @@ public class Order extends BaseEntity {
     @GeneratedValue(generator = "orderId")
     @GenericGenerator(name = "orderId", parameters = {@Parameter(name = "prefix", value = "order"), @Parameter(name = "tableName", value = "Order")},strategy = "aptech.t2008m.shoppingdemo.generator.IdGenerator")
     private String id;
-    @Column(insertable = false, updatable = false)
-    private Integer accountId;
+    private String accountId;
     @OneToOne
-    @JoinColumn(name = "accountId")
+    @JoinColumn(name = "accountId", insertable = false, updatable = false)
     private Account account;
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.ALL)
@@ -35,5 +37,6 @@ public class Order extends BaseEntity {
     private String shipAddress;
     private String shipPhone;
     private String shipNote;
-    private int status;
+    @Enumerated(EnumType.ORDINAL)
+    private OrderStatus status;
 }

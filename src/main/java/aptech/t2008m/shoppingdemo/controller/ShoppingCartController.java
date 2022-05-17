@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 public class ShoppingCartController {
     @Autowired
     ShoppingCartService shoppingCartService;
-    @Autowired
-    ProductService productService;
 
     @RequestMapping(method = RequestMethod.GET, path = "/get-all")
     public ResponseEntity<List<ShoppingCart>> findAll() {
@@ -39,45 +37,7 @@ public class ShoppingCartController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<ShoppingCart> save(@RequestBody ShoppingCartDTO shoppingCartDTO) {
-        ShoppingCart shoppingCart = shoppingCartDTO.generateCart();
-
-        Optional<ShoppingCart> optionalShoppingCart = shoppingCartService.findByUserId(shoppingCartDTO.getUserId());
-
-        if (optionalShoppingCart.isPresent()) {
-            shoppingCart = optionalShoppingCart.get();
-            shoppingCart.setTotalPrice(new BigDecimal(0));
-        }
-
-        Set<CartItem> setCartItem = new HashSet<>();
-        for (CartItemDTO cartItemDTO :
-                shoppingCartDTO.getCartItemDTOSet()) {
-            Optional<Product> optionalProduct = productService.findById(cartItemDTO.getProductId());
-            if (!optionalProduct.isPresent()) {
-                break;
-            }
-
-            if (cartItemDTO.getQuantity() <= 0){
-                cartItemDTO.setStatus(-1);
-            }
-
-            Product product = optionalProduct.get();
-            CartItem cartItem = CartItem.builder()
-                    .id(new CartItemId(shoppingCart.getId(), product.getId()))
-                    .productName(product.getName())
-                    .productThumbnail(product.getThumbnail())
-                    .quantity(cartItemDTO.getQuantity())
-                    .unitPrice(product.getPrice())
-                    .shoppingCart(shoppingCart)
-                    .status(cartItemDTO.getStatus())
-                    .cartItemStatus(CartItemStatus.of(cartItemDTO.getStatus()))
-                    .build();
-
-            shoppingCart.addTotalPrice(cartItem); // add tổng giá bigdecimal
-            setCartItem.add(cartItem);
-        }
-        shoppingCart.setCartItems(setCartItem);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(shoppingCartService.save(shoppingCart));
+        return ResponseEntity.status(HttpStatus.CREATED).body(shoppingCartService.save(shoppingCartDTO));
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")

@@ -3,6 +3,8 @@ package aptech.t2008m.shoppingdemo.controller;
 import aptech.t2008m.shoppingdemo.entity.Account;
 import aptech.t2008m.shoppingdemo.entity.Order;
 import aptech.t2008m.shoppingdemo.entity.Product;
+import aptech.t2008m.shoppingdemo.entity.dto.OrderDTO;
+import aptech.t2008m.shoppingdemo.entity.enums.OrderStatus;
 import aptech.t2008m.shoppingdemo.service.AccountService;
 import aptech.t2008m.shoppingdemo.service.OrderService;
 import aptech.t2008m.shoppingdemo.service.ProductService;
@@ -31,7 +33,7 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")
-    public ResponseEntity<Order> findById(String id){
+    public ResponseEntity<Order> findById(@PathVariable String id){
         Optional<Order> optionalOrder = orderService.findById(id);
 
         if (!optionalOrder.isPresent()) {
@@ -42,12 +44,12 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Order> save(@RequestBody Order order){
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(order));
+    public ResponseEntity<Order> save(@RequestBody OrderDTO orderDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderDTO));
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "add-to-order")
-    public ResponseEntity<?> addProductToOrder(@RequestParam String productId, @RequestParam String orderId, @RequestParam int accountId){
+    public ResponseEntity<?> addProductToOrder(@RequestParam String productId, @RequestParam String orderId, @RequestParam String accountId){
         Optional<Order> optionalOrder = orderService.findById(orderId);
         Optional<Product> optionalProduct = productService.findById(productId);
         Optional<Account> optionalAccount = accountService.findById(accountId);

@@ -20,8 +20,8 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/test01")
-    public ResponseEntity<?> test01() {
+    @RequestMapping(method = RequestMethod.GET, path = "/fake-account")
+    public ResponseEntity<?> fakeAccount() {
         Account account = new Account();
         IdentityCard identityCard = new IdentityCard();
         identityCard.setNumber("001122334455");
@@ -35,7 +35,6 @@ public class AccountController {
         account.setIdentityCard(identityCard); // tao quan he
         account.setUserName("admin");
         accountService.save(account);
-        System.out.println(accountService.findAll().get(0).getIdentityCard());
-        return ResponseEntity.status(HttpStatus.OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).body(account);
     }
 }

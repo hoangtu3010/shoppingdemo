@@ -1,7 +1,11 @@
 package aptech.t2008m.shoppingdemo.service;
 
 import aptech.t2008m.shoppingdemo.entity.*;
+import aptech.t2008m.shoppingdemo.entity.dto.OrderDTO;
+import aptech.t2008m.shoppingdemo.entity.enums.OrderStatus;
 import aptech.t2008m.shoppingdemo.repository.OrderRepository;
+import aptech.t2008m.shoppingdemo.repository.ProductRepository;
+import aptech.t2008m.shoppingdemo.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +18,13 @@ import java.util.Set;
 @Service
 public class OrderService {
     @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+
+    @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public List<Order> findAll() {
         return orderRepository.findAll();
@@ -24,7 +34,45 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public Order save(Order order) {
+    public Order save(OrderDTO orderDTO) {
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByUserId(orderDTO.getAccountId());
+        if (!shoppingCartOptional.isPresent()){
+            return null;
+        }
+        ShoppingCart existShoppingCart = shoppingCartOptional.get();
+
+        Order order = orderDTO.generateOrder();
+
+        Set<OrderDetail> orderDetails = order.getOrderDetails();
+        if (orderDetails == null){
+            orderDetails = new HashSet<>();
+        }
+
+        for (CartItem cartItem:
+             existShoppingCart.getCartItems()) {
+            Optional<Product> product = productRepository.findById(cartItem.getId().getProductId());
+
+            if (!product.isPresent()){
+                break;
+            }
+
+            Product existProduct = product.get();
+
+            System.out.println(cartItem.getId().getProductId());
+
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setId(new OrderDetailId(cartItem.getId().getProductId(), order.getId()));
+            orderDetail.setProduct(existProduct);
+            orderDetail.setOrder(order);
+            orderDetail.setUnitPrice(cartItem.getUnitPrice());
+            orderDetail.setQuantity(cartItem.getQuantity());
+            orderDetails.add(orderDetail);
+        }
+
+        order.setOrderDetails(orderDetails);
+        order.setTotalPrice(existShoppingCart.getTotalPrice());
+        order.setStatus(OrderStatus.WAITING);
+
         return orderRepository.save(order);
     }
 
