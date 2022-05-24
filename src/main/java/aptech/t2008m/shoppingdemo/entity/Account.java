@@ -1,6 +1,8 @@
 package aptech.t2008m.shoppingdemo.entity;
 
 import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
+import aptech.t2008m.shoppingdemo.entity.enums.AccountStatus;
+import aptech.t2008m.shoppingdemo.entity.enums.Roles;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -20,8 +22,8 @@ public class Account extends BaseEntity {
     private String id;
     private String userName;
     private String passwordHash;
-    private Integer status;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "identity_card_number")
-    private IdentityCard identityCard;
+    @Enumerated(EnumType.ORDINAL)
+    private Roles roleId;
+    @Enumerated(EnumType.ORDINAL)
+    private AccountStatus status;
 }

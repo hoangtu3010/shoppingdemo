@@ -1,15 +1,14 @@
 package aptech.t2008m.shoppingdemo.service;
 
-import aptech.t2008m.shoppingdemo.entity.CartItem;
-import aptech.t2008m.shoppingdemo.entity.CartItemId;
-import aptech.t2008m.shoppingdemo.entity.Product;
-import aptech.t2008m.shoppingdemo.entity.ShoppingCart;
+import aptech.t2008m.shoppingdemo.entity.*;
 import aptech.t2008m.shoppingdemo.entity.dto.CartItemDTO;
 import aptech.t2008m.shoppingdemo.entity.dto.ShoppingCartDTO;
 import aptech.t2008m.shoppingdemo.entity.enums.CartItemStatus;
+import aptech.t2008m.shoppingdemo.repository.AccountRepository;
 import aptech.t2008m.shoppingdemo.repository.ProductRepository;
 import aptech.t2008m.shoppingdemo.repository.ShoppingCartRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import aptech.t2008m.shoppingdemo.until.CurrentUser;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,10 +19,17 @@ import java.util.Set;
 
 @Service
 public class ShoppingCartService {
-    @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
-    @Autowired
-    private ProductRepository productRepository;
+    private final ModelMapper modelMapper;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final ProductRepository productRepository;
+    private final AccountRepository accountRepository;
+
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository, AccountRepository accountRepository) {
+        this.shoppingCartRepository = shoppingCartRepository;
+        this.productRepository = productRepository;
+        this.accountRepository = accountRepository;
+        this.modelMapper = new ModelMapper();
+    }
 
     public List<ShoppingCart> findAll() {
         return shoppingCartRepository.findAll();
@@ -33,14 +39,24 @@ public class ShoppingCartService {
         return shoppingCartRepository.findById(id);
     }
 
-    public Optional<ShoppingCart> findByUserId(String userId) {
-        return shoppingCartRepository.findByUserId(userId);
+    public Optional<ShoppingCart> findByAccountUserName(String userName){
+        return shoppingCartRepository.findByAccount_UserName(userName);
     }
 
     public ShoppingCart save(ShoppingCartDTO shoppingCartDTO) {
-        ShoppingCart shoppingCart = shoppingCartDTO.generateCart();
+        ShoppingCart shoppingCart = modelMapper.map(shoppingCartDTO, ShoppingCart.class);
 
-        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findByUserId(shoppingCartDTO.getUserId());
+        Optional<Account> optionalAccount = accountRepository.findAccountByUserName(CurrentUser.getCurrentUser().getName());
+
+        if (!optionalAccount.isPresent()){
+            return null;
+        }
+
+        Account account = optionalAccount.get();
+
+        shoppingCart.setAccountId(account.getId());
+
+        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findByAccount_UserName(account.getUserName());
 
         if (optionalShoppingCart.isPresent()) {
             shoppingCart = optionalShoppingCart.get();

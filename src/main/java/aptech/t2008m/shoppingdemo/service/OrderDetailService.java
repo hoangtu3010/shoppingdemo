@@ -2,7 +2,6 @@ package aptech.t2008m.shoppingdemo.service;
 
 import aptech.t2008m.shoppingdemo.entity.OrderDetail;
 import aptech.t2008m.shoppingdemo.repository.OrderDetailRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +9,11 @@ import java.util.Optional;
 
 @Service
 public class OrderDetailService {
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
+    private final OrderDetailRepository orderDetailRepository;
+
+    public OrderDetailService(OrderDetailRepository orderDetailRepository) {
+        this.orderDetailRepository = orderDetailRepository;
+    }
 
     public List<OrderDetail> findAll() {
         return orderDetailRepository.findAll();

@@ -1,10 +1,7 @@
 package aptech.t2008m.shoppingdemo.service;
 
 import aptech.t2008m.shoppingdemo.entity.Category;
-import aptech.t2008m.shoppingdemo.entity.Product;
 import aptech.t2008m.shoppingdemo.repository.CategoryRepository;
-import aptech.t2008m.shoppingdemo.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +9,11 @@ import java.util.Optional;
 
 @Service
 public class CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     public List<Category> findAll() {
         return categoryRepository.findAll();

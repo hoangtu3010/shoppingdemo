@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @ToString
 @Entity
+@Builder
 @Table(name = "order_detail")
 public class OrderDetail {
     @EmbeddedId

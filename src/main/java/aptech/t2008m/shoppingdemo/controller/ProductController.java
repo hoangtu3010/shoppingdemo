@@ -3,43 +3,45 @@ package aptech.t2008m.shoppingdemo.controller;
 import aptech.t2008m.shoppingdemo.entity.Product;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path = "api/v1/products")
 public class ProductController {
-    @Autowired
-    ProductService productService;
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
+//    @PreAuthorize("hasAuthority('user')")
     public ResponseEntity<Page<Product>> getPage(
             @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") Integer categoryId,
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(defaultValue = "1") int pageIndex,
             @RequestParam(defaultValue = "10") int pageSize) {
-        return ResponseEntity.ok(productService.getPage(keyword, sort, pageIndex, pageSize));
+
+        return ResponseEntity.ok(productService.getPage(keyword, categoryId, sort, pageIndex, pageSize));
     }
 
-//    @RequestMapping(method = RequestMethod.GET, path = "/search")
-//    public ResponseEntity<List<Product>> getListSearch(@RequestParam(defaultValue = "") String keyword) {
-//        return ResponseEntity.ok(productService.getListSearch(keyword));
-//    }
-
     @RequestMapping(method = RequestMethod.POST)
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Product> save(@RequestBody Product product) {
         product.setStatus(ProductStatus.ACTIVE);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Product> update(@PathVariable String id, @RequestBody Product product) {
         Optional<Product> optionalProduct = productService.findById(id);
 
@@ -66,6 +68,7 @@ public class ProductController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")
+//  @PreAuthorize("hasAuthority('user')")
     public ResponseEntity<Product> findById(@PathVariable String id) {
         Optional<Product> optionalProduct = productService.findById(id);
 
@@ -77,6 +80,7 @@ public class ProductController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Boolean> delete(@PathVariable String id) {
         Optional<Product> optionalProduct = productService.findById(id);
 

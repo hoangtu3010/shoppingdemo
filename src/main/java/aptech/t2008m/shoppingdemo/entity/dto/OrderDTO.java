@@ -10,19 +10,8 @@ import lombok.*;
 @Builder
 @ToString
 public class OrderDTO {
-    private String accountId;
     private String shipName;
     private String shipAddress;
     private String shipPhone;
     private String shipNote;
-
-    public Order generateOrder() {
-        return Order.builder()
-                .accountId(this.accountId)
-                .shipName(this.shipName)
-                .shipAddress(this.shipAddress)
-                .shipPhone(this.shipPhone)
-                .shipNote(this.shipNote)
-                .build();
-    }
 }

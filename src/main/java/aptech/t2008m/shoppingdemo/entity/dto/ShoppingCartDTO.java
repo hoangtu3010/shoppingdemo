@@ -14,13 +14,7 @@ import java.util.Set;
 @ToString
 public class ShoppingCartDTO {
     private String id;
-    private String userId;
+//    private String accountId;
     private BigDecimal totalPrice;
     private Set<CartItemDTO> cartItemDTOSet;
-
-    public ShoppingCart generateCart() {
-        return ShoppingCart.builder()
-                .userId(this.userId)
-                .build();
-    }
 }

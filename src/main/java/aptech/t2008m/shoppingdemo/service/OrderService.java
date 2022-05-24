@@ -2,32 +2,73 @@ package aptech.t2008m.shoppingdemo.service;
 
 import aptech.t2008m.shoppingdemo.entity.*;
 import aptech.t2008m.shoppingdemo.entity.dto.OrderDTO;
+import aptech.t2008m.shoppingdemo.entity.enums.CartItemStatus;
 import aptech.t2008m.shoppingdemo.entity.enums.OrderStatus;
+import aptech.t2008m.shoppingdemo.entity.search.SearchCriteria;
+import aptech.t2008m.shoppingdemo.entity.search.SearchCriteriaOperator;
 import aptech.t2008m.shoppingdemo.repository.OrderRepository;
 import aptech.t2008m.shoppingdemo.repository.ProductRepository;
 import aptech.t2008m.shoppingdemo.repository.ShoppingCartRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import aptech.t2008m.shoppingdemo.specifications.OrderSpecification;
+import aptech.t2008m.shoppingdemo.until.CurrentUser;
+import aptech.t2008m.shoppingdemo.until.DateTimeHelper;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class OrderService {
-    @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
+    private final ModelMapper modelMapper;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private OrderRepository orderRepository;
+    public OrderService(ShoppingCartRepository shoppingCartRepository, OrderRepository orderRepository, ProductRepository productRepository) {
+        this.shoppingCartRepository = shoppingCartRepository;
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.modelMapper = new ModelMapper();
+    }
 
-    @Autowired
-    private ProductRepository productRepository;
+    public Page<Order> getPage(Integer pageIndex, Integer pageSize, String startDate, String endDate,Integer status, String accountId, String userName, String productName) {
+        Specification<Order> specification = Specification.where(null);
 
-    public List<Order> findAll() {
-        return orderRepository.findAll();
+        if (status != null){
+            OrderSpecification spec = new OrderSpecification(new SearchCriteria("status", SearchCriteriaOperator.EQUALS, status));
+            specification = specification.and(spec);
+        }
+
+        if (!accountId.isEmpty()){
+            OrderSpecification spec = new OrderSpecification(new SearchCriteria("accountId", SearchCriteriaOperator.EQUALS, accountId));
+            specification = specification.and(spec);
+        }
+
+        if (!startDate.isEmpty()){
+            OrderSpecification spec = new OrderSpecification(new SearchCriteria("createdAt", SearchCriteriaOperator.GREATER_THAN_OR_EQUALS, DateTimeHelper.convertStringToLocalDateTime(startDate)));
+            specification = specification.and(spec);
+        }
+
+        if (!endDate.isEmpty()){
+            OrderSpecification spec = new OrderSpecification(new SearchCriteria("createdAt", SearchCriteriaOperator.LESS_THAN_OR_EQUALS, DateTimeHelper.convertStringToLocalDateTime(endDate)));
+            specification = specification.and(spec);
+        }
+
+        if (!userName.isEmpty()){
+            OrderSpecification spec = new OrderSpecification(new SearchCriteria("account", SearchCriteriaOperator.JOIN, userName));
+            specification = specification.and(spec);
+        }
+
+        if (!productName.isEmpty()){
+            OrderSpecification spec = new OrderSpecification(new SearchCriteria("product", SearchCriteriaOperator.JOIN, productName));
+            specification = specification.and(spec);
+        }
+
+        return orderRepository.findAll(specification, PageRequest.of(pageIndex - 1, pageSize));
     }
 
     public Optional<Order> findById(String id) {
@@ -35,13 +76,15 @@ public class OrderService {
     }
 
     public Order save(OrderDTO orderDTO) {
-        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByUserId(orderDTO.getAccountId());
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByAccount_UserName(CurrentUser.getCurrentUser().getName());
         if (!shoppingCartOptional.isPresent()){
             return null;
         }
         ShoppingCart existShoppingCart = shoppingCartOptional.get();
 
-        Order order = orderDTO.generateOrder();
+        Order order = modelMapper.map(orderDTO, Order.class);
+
+        order.setAccountId(existShoppingCart.getAccountId());
 
         Set<OrderDetail> orderDetails = order.getOrderDetails();
         if (orderDetails == null){
@@ -50,6 +93,10 @@ public class OrderService {
 
         for (CartItem cartItem:
              existShoppingCart.getCartItems()) {
+            if (cartItem.getStatus() != CartItemStatus.ACTIVE.getValue()){
+                continue;
+            }
+
             Optional<Product> product = productRepository.findById(cartItem.getId().getProductId());
 
             if (!product.isPresent()){
@@ -57,8 +104,6 @@ public class OrderService {
             }
 
             Product existProduct = product.get();
-
-            System.out.println(cartItem.getId().getProductId());
 
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setId(new OrderDetailId(cartItem.getId().getProductId(), order.getId()));
@@ -78,35 +123,5 @@ public class OrderService {
 
     public void deleteById(String id) {
         orderRepository.deleteById(id);
-    }
-
-    public boolean addProductToOrder(Product product, Order order, Account account){
-        try {
-            BigDecimal totalPrice = new BigDecimal(0);
-
-            Set<OrderDetail> orderDetails = order.getOrderDetails();
-            if (orderDetails == null){
-                orderDetails = new HashSet<>();
-            }
-            order.setId("");
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setId(new OrderDetailId(product.getId(), order.getId()));
-            orderDetail.setProduct(product);
-            orderDetail.setOrder(order);
-            orderDetail.setUnitPrice(product.getPrice());
-            orderDetails.add(orderDetail);
-            order.setAccountId(account.getId());
-            order.setOrderDetails(orderDetails);
-
-            for (OrderDetail od :
-                    order.getOrderDetails()) {
-                totalPrice.add(new BigDecimal(od.getQuantity()).multiply(od.getUnitPrice()));
-            }
-            order.setTotalPrice(totalPrice);
-            orderRepository.save(order);
-        }catch (Exception ex){
-            return false;
-        }
-        return true;
     }
 }

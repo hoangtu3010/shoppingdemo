@@ -1,8 +1,10 @@
 package aptech.t2008m.shoppingdemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -18,9 +20,13 @@ import java.util.Set;
 public class ShoppingCart {
     @Id
     @GeneratedValue(generator = "shoppingCartId")
-    @GenericGenerator(name = "shoppingCartId", parameters = {@org.hibernate.annotations.Parameter(name = "prefix", value = "shopping_cart"), @org.hibernate.annotations.Parameter(name = "tableName", value = "ShoppingCart")}, strategy = "aptech.t2008m.shoppingdemo.generator.IdGenerator")
+    @GenericGenerator(name = "shoppingCartId", parameters = {@Parameter(name = "prefix", value = "shopping_cart"), @Parameter(name = "tableName", value = "ShoppingCart")}, strategy = "aptech.t2008m.shoppingdemo.generator.IdGenerator")
     private String id;
-    private String userId;
+    private String accountId;
+    @OneToOne
+    @JoinColumn(name = "accountId", insertable = false, updatable = false)
+    @JsonBackReference
+    private Account account;
     private BigDecimal totalPrice;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     @JsonManagedReference

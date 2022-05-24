@@ -2,7 +2,6 @@ package aptech.t2008m.shoppingdemo.controller;
 
 import aptech.t2008m.shoppingdemo.entity.OrderDetail;
 import aptech.t2008m.shoppingdemo.service.OrderDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +15,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "api/v1/order-detail")
 public class OrderDetailController {
-    @Autowired
-    private OrderDetailService orderDetailService;
+    private final OrderDetailService orderDetailService;
+
+    public OrderDetailController(OrderDetailService orderDetailService) {
+        this.orderDetailService = orderDetailService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<OrderDetail>> findAll(){

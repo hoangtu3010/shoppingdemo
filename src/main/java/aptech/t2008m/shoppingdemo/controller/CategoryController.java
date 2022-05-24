@@ -8,6 +8,7 @@ import aptech.t2008m.shoppingdemo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +18,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "api/v1/categories")
 public class CategoryController {
-    @Autowired
-    CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Category>> findAll() {
@@ -26,12 +30,14 @@ public class CategoryController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Category> save(@RequestBody Category category) {
         category.setStatus(ProductStatus.ACTIVE);
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(category));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Category> update(@PathVariable Integer id, @RequestBody Category category) {
         Optional<Category> optionalCategory = categoryService.findById(id);
 
@@ -58,6 +64,7 @@ public class CategoryController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
         Optional<Category> optionalCategory = categoryService.findById(id);
 

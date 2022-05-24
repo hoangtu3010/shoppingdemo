@@ -33,7 +33,7 @@ public class IdGenerator implements IdentifierGenerator {
 
         if (obj.getClass().getSimpleName().equals("Product")){
             Product product = (Product) obj;
-            product.setSlug(StringHelper.toSlug(product.getName() + " " + prefix + "_" + (max + 1)));
+            product.setSlug(StringHelper.toSlug("/" + product.getName() + " " + prefix + "_" + (max + 1)));
         }
 
         return prefix + "_" + (max + 1);

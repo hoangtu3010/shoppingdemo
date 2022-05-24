@@ -1,34 +1,26 @@
 package aptech.t2008m.shoppingdemo.controller;
 
-import aptech.t2008m.shoppingdemo.entity.CartItem;
-import aptech.t2008m.shoppingdemo.entity.CartItemId;
-import aptech.t2008m.shoppingdemo.entity.Product;
 import aptech.t2008m.shoppingdemo.entity.ShoppingCart;
-import aptech.t2008m.shoppingdemo.entity.dto.CartItemDTO;
-import aptech.t2008m.shoppingdemo.entity.dto.ProductDTO;
 import aptech.t2008m.shoppingdemo.entity.dto.ShoppingCartDTO;
-import aptech.t2008m.shoppingdemo.entity.enums.CartItemStatus;
-import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
-import aptech.t2008m.shoppingdemo.service.ProductService;
 import aptech.t2008m.shoppingdemo.service.ShoppingCartService;
-import org.springframework.beans.factory.annotation.Autowired;
+import aptech.t2008m.shoppingdemo.until.CurrentUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path = "api/v1/shopping-cart")
 public class ShoppingCartController {
-    @Autowired
-    ShoppingCartService shoppingCartService;
+    private final ShoppingCartService shoppingCartService;
+
+    public ShoppingCartController(ShoppingCartService shoppingCartService) {
+        this.shoppingCartService = shoppingCartService;
+    }
 
     @RequestMapping(method = RequestMethod.GET, path = "/get-all")
     public ResponseEntity<List<ShoppingCart>> findAll() {
@@ -52,8 +44,8 @@ public class ShoppingCartController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<ShoppingCart> findByUserId(@RequestParam(defaultValue = "") String userId) {
-        Optional<ShoppingCart> shoppingCartOptional = shoppingCartService.findByUserId(userId);
+    public ResponseEntity<ShoppingCart> findByUserName() {
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartService.findByAccountUserName(CurrentUser.getCurrentUser().getName());
 
         if (!shoppingCartOptional.isPresent()) {
             ResponseEntity.notFound();
