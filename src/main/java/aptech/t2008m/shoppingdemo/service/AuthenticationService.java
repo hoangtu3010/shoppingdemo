@@ -3,15 +3,9 @@ package aptech.t2008m.shoppingdemo.service;
 import aptech.t2008m.shoppingdemo.entity.Account;
 import aptech.t2008m.shoppingdemo.entity.CurrentUserDetails;
 import aptech.t2008m.shoppingdemo.entity.Roles;
-import aptech.t2008m.shoppingdemo.entity.dto.CredentialDTO;
 import aptech.t2008m.shoppingdemo.entity.enums.AccountStatus;
 import aptech.t2008m.shoppingdemo.repository.AccountRepository;
 import aptech.t2008m.shoppingdemo.until.CurrentUser;
-import aptech.t2008m.shoppingdemo.until.JwtUtil;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,13 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
