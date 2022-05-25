@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationFilter.setFilterProcessesUrl("/api/v1/auth/login");
         http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/v1/**").permitAll()
+                .authorizeRequests().antMatchers("/api/v1/**", "/hello").permitAll()
                 .antMatchers("/api/v1/admins/**").hasAnyAuthority("admin")
                 .antMatchers("/api/v1/shopping-cart/**").hasAnyAuthority("user", "admin")
                 .antMatchers("/api/v1/orders/**").hasAnyAuthority("user", "admin")
