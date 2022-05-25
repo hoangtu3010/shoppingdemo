@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.*;
 
-//@Component
+@Component
 public class DataSeeder implements CommandLineRunner {
     private final Faker faker = new Faker();
     private final OrderRepository orderRepository;
