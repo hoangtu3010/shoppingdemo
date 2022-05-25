@@ -118,7 +118,7 @@ public class DataSeeder implements CommandLineRunner {
             for (int i = 0; i < 100; i++) {
                 Product product = new Product();
                 product.setName(faker.name().title());
-                product.setThumbnail(fakeImages.get(faker.number().numberBetween(0, fakeImages.size())-1));
+                product.setThumbnail(fakeImages.get(faker.number().numberBetween(0, fakeImages.size()-1)));
                 product.setDescription(faker.lorem().sentence());
                 product.setPrice(new BigDecimal(faker.number().numberBetween(1, 999)));
                 product.setCategoryId(categories.get(faker.number().numberBetween(0, categories.size() - 1)).getId());
