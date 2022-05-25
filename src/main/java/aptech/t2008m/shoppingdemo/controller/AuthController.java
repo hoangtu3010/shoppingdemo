@@ -37,7 +37,7 @@ public class AuthController {
     AuthenticationService authenticationService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/register")
-    public ResponseEntity<?> register(@RequestBody Account account) {
+    public ResponseEntity<Object> register(@RequestBody Account account) {
         if (accountService.existsAccount(account.getUserName())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username is already taken!");
         }

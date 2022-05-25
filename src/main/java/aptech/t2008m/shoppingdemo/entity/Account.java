@@ -24,7 +24,6 @@ public class Account extends BaseEntity {
     private String userName;
     private String passwordHash;
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    @JsonManagedReference
     private Set<Roles> roles;
     @Enumerated(EnumType.ORDINAL)
     private AccountStatus status;

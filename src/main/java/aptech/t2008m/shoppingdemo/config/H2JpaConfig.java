@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
-@Configuration
+//@Configuration
 @EnableJpaRepositories(basePackages = "aptech.t2008m.shoppingdemo.repository")
 @EnableTransactionManagement
 public class H2JpaConfig {

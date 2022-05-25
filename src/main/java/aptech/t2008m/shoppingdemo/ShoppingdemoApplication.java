@@ -24,11 +24,6 @@ public class ShoppingdemoApplication {
         return new BCryptPasswordEncoder();
     }
 
-
-    public static void main(String[] args) {
-        SpringApplication.run(ShoppingdemoApplication.class, args);
-    }
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurerAdapter() {
@@ -37,6 +32,10 @@ public class ShoppingdemoApplication {
                 registry.addMapping("/**").allowedOrigins("http://localhost:3000");
             }
         };
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ShoppingdemoApplication.class, args);
     }
 
 }
