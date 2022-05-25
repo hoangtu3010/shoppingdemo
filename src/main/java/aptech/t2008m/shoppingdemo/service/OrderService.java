@@ -125,7 +125,9 @@ public class OrderService {
         order.setCreatedBy(authenticationService.getCurrentUser().getUser().getId());
         order.setUpdatedBy(authenticationService.getCurrentUser().getUser().getId());
 
-        existShoppingCart.setCartItems(new HashSet<>());
+
+        Set<CartItem> refreshCartItem = new HashSet<>();
+        existShoppingCart.setCartItems(refreshCartItem);
         existShoppingCart.setTotalPrice(new BigDecimal(0));
         shoppingCartRepository.save(existShoppingCart);
 
