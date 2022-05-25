@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/")
+@RequestMapping
 public class HelloController {
     @GetMapping(path = "/hello")
     public String hello(){
