@@ -22,7 +22,7 @@ import java.util.*;
 import static java.util.Arrays.stream;
 
 public class AuthorizationFilter extends OncePerRequestFilter {
-    private static final String[] IGNORE_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/token/refresh"};
+    private static final String[] IGNORE_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/token/refresh", "/hello"};
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
