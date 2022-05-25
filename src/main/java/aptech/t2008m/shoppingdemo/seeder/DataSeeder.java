@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.*;
 
 @Component
@@ -19,32 +18,63 @@ public class DataSeeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final AccountRepository accountRepository;
     private final ShoppingCartRepository shoppingCartRepository;
+    private final RolesRepository rolesRepository;
 
-    public DataSeeder(CategoryRepository categoryRepository, OrderRepository orderRepository, ProductRepository productRepository, AccountRepository accountRepository, ShoppingCartRepository shoppingCartRepository) {
+    public DataSeeder(CategoryRepository categoryRepository, OrderRepository orderRepository, ProductRepository productRepository, AccountRepository accountRepository, ShoppingCartRepository shoppingCartRepository, RolesRepository rolesRepository) {
         this.categoryRepository = categoryRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.accountRepository = accountRepository;
         this.shoppingCartRepository = shoppingCartRepository;
+        this.rolesRepository = rolesRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         seedCategory();
         seedProduct();
+        seedRoles();
         seedAccount();
         seedShoppingCart();
         seedOrder();
     }
 
+    private void seedRoles() {
+        if (rolesRepository.findAll().isEmpty()){
+            List<Roles> roles = new ArrayList<>();
+
+            Roles role1 = new Roles();
+            role1.setName("user");
+
+            Roles role2 = new Roles();
+            role2.setName("admin");
+
+            Roles role3 = new Roles();
+            role3.setName("moderator");
+
+            roles.add(role1);
+            roles.add(role2);
+            roles.add(role3);
+
+            rolesRepository.saveAll(roles);
+        }
+    }
+
     private void seedAccount() {
         if (accountRepository.findAll().isEmpty()) {
             List<Account> accounts = new ArrayList<>();
+            List<Roles> rolesList = rolesRepository.findAll();
 
             for (int i = 0; i < 5; i++) {
+                Set<Roles> roles = new HashSet<>();
+                int rolesNumber = faker.number().numberBetween(1, rolesList.size());
+                for (int j = 0; j < rolesNumber; j++){
+                    roles.add(rolesList.get(faker.number().numberBetween(0, rolesList.size() - 1)));
+                }
+
                 Account account = new Account();
                 account.setUserName(faker.name().username());
-                account.setRoleId(Roles.USER);
+                account.setRoles(roles);
                 account.setStatus(AccountStatus.ACTIVE);
                 accounts.add(account);
             }

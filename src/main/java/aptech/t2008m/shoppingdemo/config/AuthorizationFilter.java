@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
+import static java.util.Arrays.stream;
+
 public class AuthorizationFilter extends OncePerRequestFilter {
     private static final String[] IGNORE_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/token/refresh"};
 
@@ -41,11 +43,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             DecodedJWT decodedJWT = JwtUtil.getDecodedJwt(token);
             String username = decodedJWT.getSubject();
 
-            String role= decodedJWT.getClaim(JwtUtil.ROLE_CLAIM_KEY).asString();
+            String[] roles = decodedJWT.getClaim(JwtUtil.ROLE_CLAIM_KEY).asArray(String.class);
 
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-            authorities.add(new SimpleGrantedAuthority(role));
+            stream(roles).forEach(role -> {
+                authorities.add(new SimpleGrantedAuthority(role));
+            });
 
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(username, null, authorities);

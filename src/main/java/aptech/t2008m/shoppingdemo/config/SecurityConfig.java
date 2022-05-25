@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private final AuthenticationService authenticationService;
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
 
     @Bean(name = "authenticationManagerBean")
     @Override
@@ -36,14 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean(name = "passwordEncoder")
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(authenticationService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(authenticationService).passwordEncoder(passwordEncoder);
     }
 
     @Override

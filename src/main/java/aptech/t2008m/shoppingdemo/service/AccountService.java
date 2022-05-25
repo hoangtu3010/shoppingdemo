@@ -2,7 +2,6 @@ package aptech.t2008m.shoppingdemo.service;
 
 import aptech.t2008m.shoppingdemo.entity.Account;
 import aptech.t2008m.shoppingdemo.entity.enums.AccountStatus;
-import aptech.t2008m.shoppingdemo.entity.enums.Roles;
 import aptech.t2008m.shoppingdemo.repository.AccountRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ public class AccountService {
 
     public Account save(Account account) {
         account.setPasswordHash(passwordEncoder.encode(account.getPasswordHash()));
-        account.setRoleId(Roles.USER);
         account.setStatus(AccountStatus.ACTIVE);
 
         return accountRepository.save(account);

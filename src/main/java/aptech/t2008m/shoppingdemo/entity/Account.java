@@ -2,11 +2,12 @@ package aptech.t2008m.shoppingdemo.entity;
 
 import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
 import aptech.t2008m.shoppingdemo.entity.enums.AccountStatus;
-import aptech.t2008m.shoppingdemo.entity.enums.Roles;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,8 +23,9 @@ public class Account extends BaseEntity {
     private String id;
     private String userName;
     private String passwordHash;
-    @Enumerated(EnumType.ORDINAL)
-    private Roles roleId;
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<Roles> roles;
     @Enumerated(EnumType.ORDINAL)
     private AccountStatus status;
 }

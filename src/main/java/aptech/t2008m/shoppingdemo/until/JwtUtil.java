@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
+import java.util.List;
 
 //helper class for handling with jwt token
 public class JwtUtil {
@@ -40,8 +41,8 @@ public class JwtUtil {
         return getVerifier().verify(token);
     }
 
-    public static String generateToken(String subject, String role, String issuer, int expireAfter) {
-        if(role == null || role.length() == 0) {
+    public static String generateToken(String subject, List<String> roles, String issuer, int expireAfter) {
+        if(roles == null || roles.size() == 0) {
             return JWT.create()
                     .withSubject(subject)
                     .withExpiresAt(new Date(System.currentTimeMillis() + expireAfter))
@@ -55,7 +56,7 @@ public class JwtUtil {
                 // when role n -> n user
                 //.withClaim(JwtUtil.ROLE_CLAIM_KEY, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 //when role n -> 1 user
-                .withClaim(JwtUtil.ROLE_CLAIM_KEY, role) //get first role in Authorities
+                .withClaim(JwtUtil.ROLE_CLAIM_KEY, roles) //get first role in Authorities
                 .sign(getAlgorithm());
     }
 }

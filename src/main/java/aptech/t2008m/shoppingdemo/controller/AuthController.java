@@ -2,9 +2,11 @@ package aptech.t2008m.shoppingdemo.controller;
 
 import aptech.t2008m.shoppingdemo.entity.Account;
 import aptech.t2008m.shoppingdemo.entity.CurrentUserDetails;
+import aptech.t2008m.shoppingdemo.entity.Roles;
 import aptech.t2008m.shoppingdemo.entity.dto.CredentialDTO;
-import aptech.t2008m.shoppingdemo.entity.enums.Roles;
+import aptech.t2008m.shoppingdemo.repository.RolesRepository;
 import aptech.t2008m.shoppingdemo.service.AccountService;
+import aptech.t2008m.shoppingdemo.service.AuthenticationService;
 import aptech.t2008m.shoppingdemo.until.CurrentUser;
 import aptech.t2008m.shoppingdemo.until.JwtUtil;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -29,30 +33,23 @@ public class AuthController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    AuthenticationService authenticationService;
+
     @RequestMapping(method = RequestMethod.POST, path = "/register")
-    public ResponseEntity<?> register(@RequestBody Account account){
+    public ResponseEntity<?> register(@RequestBody Account account) {
         if (accountService.existsAccount(account.getUserName())) {
-            return ResponseEntity.badRequest().body("Username is already taken!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username is already taken!");
         }
-
-        Account result = accountService.save(account);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.register(account));
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/user")
-    public ResponseEntity<CurrentUserDetails> getCurrentUser(){
-        Optional<Account> optionalAccount = accountService.findByUsername(CurrentUser.getCurrentUser().getName());
-
-        if (!optionalAccount.isPresent()){
+    public ResponseEntity<CurrentUserDetails> getCurrentUser() {
+        if (authenticationService.getCurrentUser() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-
-        Account account = optionalAccount.get();
-
-        CurrentUserDetails currentUserDetails = new CurrentUserDetails(account);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(currentUserDetails);
+        return ResponseEntity.ok(authenticationService.getCurrentUser());
     }
 
     @RequestMapping(value = "/token/refresh", method = RequestMethod.GET)
@@ -75,21 +72,20 @@ public class AuthController {
             //now return new token
             //generate tokens
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            if (account.getRoleId() == Roles.USER){
-                authorities.add(new SimpleGrantedAuthority("user"));
-            }
-            else if (account.getRoleId() == Roles.ADMIN){
-                authorities.add(new SimpleGrantedAuthority("admin"));
+
+            for (Roles role:
+                    account.getRoles()) {
+                authorities.add(new SimpleGrantedAuthority(role.getName()));
             }
             String accessToken = JwtUtil.generateToken(
                     account.getUserName(),
-                    CurrentUser.getCurrentUser().getAuthorities().iterator().next().getAuthority(),
+                    authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()),
                     request.getRequestURL().toString(),
                     JwtUtil.ONE_DAY * 7);
 
             String refreshToken = JwtUtil.generateToken(
                     account.getUserName(),
-                    CurrentUser.getCurrentUser().getAuthorities().iterator().next().getAuthority(),
+                    authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()),
                     request.getRequestURL().toString(),
                     JwtUtil.ONE_DAY * 14);
             CredentialDTO credential = new CredentialDTO(accessToken, refreshToken);
