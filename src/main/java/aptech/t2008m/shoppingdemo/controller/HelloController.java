@@ -1,15 +1,12 @@
 package aptech.t2008m.shoppingdemo.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping
+@RequestMapping(path = "/hello")
 public class HelloController {
-    @GetMapping(path = "/")
+    @RequestMapping(method = RequestMethod.GET)
     public String hello(){
         return "hello";
     }
