@@ -6,6 +6,7 @@ import aptech.t2008m.shoppingdemo.entity.enums.CartItemStatus;
 import aptech.t2008m.shoppingdemo.entity.enums.OrderStatus;
 import aptech.t2008m.shoppingdemo.entity.search.SearchCriteria;
 import aptech.t2008m.shoppingdemo.entity.search.SearchCriteriaOperator;
+import aptech.t2008m.shoppingdemo.repository.CartItemRepository;
 import aptech.t2008m.shoppingdemo.repository.OrderRepository;
 import aptech.t2008m.shoppingdemo.repository.ProductRepository;
 import aptech.t2008m.shoppingdemo.repository.ShoppingCartRepository;
@@ -29,13 +30,15 @@ public class OrderService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final CartItemRepository cartItemRepository;
     private final AuthenticationService authenticationService;
 
 
-    public OrderService(ShoppingCartRepository shoppingCartRepository, OrderRepository orderRepository, ProductRepository productRepository, AuthenticationService authenticationService) {
+    public OrderService(ShoppingCartRepository shoppingCartRepository, OrderRepository orderRepository, ProductRepository productRepository, CartItemRepository cartItemRepository, AuthenticationService authenticationService) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.cartItemRepository = cartItemRepository;
         this.authenticationService = authenticationService;
         this.modelMapper = new ModelMapper();
     }
@@ -117,6 +120,8 @@ public class OrderService {
             orderDetail.setUnitPrice(cartItem.getUnitPrice());
             orderDetail.setQuantity(cartItem.getQuantity());
             orderDetails.add(orderDetail);
+
+            cartItemRepository.deleteById(new CartItemId(existShoppingCart.getId(), existShoppingCart.getId()));
         }
 
         order.setOrderDetails(orderDetails);
@@ -125,9 +130,6 @@ public class OrderService {
         order.setCreatedBy(authenticationService.getCurrentUser().getUser().getId());
         order.setUpdatedBy(authenticationService.getCurrentUser().getUser().getId());
 
-
-        Set<CartItem> refreshCartItem = new HashSet<>();
-        existShoppingCart.setCartItems(refreshCartItem);
         existShoppingCart.setTotalPrice(new BigDecimal(0));
         shoppingCartRepository.save(existShoppingCart);
 
