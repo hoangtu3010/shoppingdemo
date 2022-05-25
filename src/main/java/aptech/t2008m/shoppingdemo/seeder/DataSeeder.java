@@ -29,8 +29,20 @@ public class DataSeeder implements CommandLineRunner {
         this.rolesRepository = rolesRepository;
     }
 
+    public static List<String> fakeImages = new ArrayList<>();
+
     @Override
     public void run(String... args) throws Exception {
+        fakeImages.add("https://photographer.vn/wp-content/uploads/2020/09/chupanhdouongsangtrong1.jpg");
+        fakeImages.add("http://rivalmedia.vn/wp-content/uploads/2021/06/chup-anh-san-pham-1.jpg");
+        fakeImages.add("https://lavenderstudio.com.vn/wp-content/uploads/2017/03/chup-san-pham-uy-tin.jpg");
+        fakeImages.add("http://rivalmedia.vn/wp-content/uploads/2021/06/chup-anh-san-pham-2.jpg");
+        fakeImages.add("https://d1j8r0kxyu9tj8.cloudfront.net/images/1565661304KeDpTYhsF3F95Xt.jpg");
+        fakeImages.add("https://margram.vn/files/chup-anh-san-pham-61.jpg");
+        fakeImages.add("https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1548761631280-IWOZDVZXHRQYRIGYG365/27072809_2107874492572797_5078792318071986073_n.jpg");
+        fakeImages.add("https://htmediagroup.vn/wp-content/uploads/2021/07/anh-my-pham-3-min.jpg");
+        fakeImages.add("https://htmediagroup.vn/wp-content/uploads/2021/07/anh-my-pham-2-min.jpg");
+
         seedCategory();
         seedProduct();
         seedRoles();
@@ -106,7 +118,7 @@ public class DataSeeder implements CommandLineRunner {
             for (int i = 0; i < 100; i++) {
                 Product product = new Product();
                 product.setName(faker.name().title());
-                product.setThumbnail(faker.avatar().image());
+                product.setThumbnail(fakeImages.get(faker.number().numberBetween(0, fakeImages.size())-1));
                 product.setDescription(faker.lorem().sentence());
                 product.setPrice(new BigDecimal(faker.number().numberBetween(1, 999)));
                 product.setCategoryId(categories.get(faker.number().numberBetween(0, categories.size() - 1)).getId());
