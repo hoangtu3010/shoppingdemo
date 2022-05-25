@@ -121,7 +121,15 @@ public class OrderService {
             orderDetail.setQuantity(cartItem.getQuantity());
             orderDetails.add(orderDetail);
 
-            cartItemRepository.deleteById(new CartItemId(existShoppingCart.getId(), existProduct.getId()));
+            Optional<CartItem> optionalCartItem = cartItemRepository.findById(new CartItemId(existShoppingCart.getId(), existProduct.getId()));
+
+            if (!optionalCartItem.isPresent()){
+                continue;
+            }
+
+            CartItem existCartItem = optionalCartItem.get();
+            existCartItem.setQuantity(0);
+            existCartItem.setStatus(CartItemStatus.DELETED.getValue());
         }
 
         order.setOrderDetails(orderDetails);
