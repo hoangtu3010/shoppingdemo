@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -27,11 +29,14 @@ public class OrderService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final AuthenticationService authenticationService;
 
-    public OrderService(ShoppingCartRepository shoppingCartRepository, OrderRepository orderRepository, ProductRepository productRepository) {
+
+    public OrderService(ShoppingCartRepository shoppingCartRepository, OrderRepository orderRepository, ProductRepository productRepository, AuthenticationService authenticationService) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.authenticationService = authenticationService;
         this.modelMapper = new ModelMapper();
     }
 
@@ -117,6 +122,12 @@ public class OrderService {
         order.setOrderDetails(orderDetails);
         order.setTotalPrice(existShoppingCart.getTotalPrice());
         order.setStatus(OrderStatus.WAITING);
+        order.setCreatedBy(authenticationService.getCurrentUser().getUser().getId());
+        order.setUpdatedBy(authenticationService.getCurrentUser().getUser().getId());
+
+        existShoppingCart.setCartItems(new HashSet<>());
+        existShoppingCart.setTotalPrice(new BigDecimal(0));
+        shoppingCartRepository.save(existShoppingCart);
 
         return orderRepository.save(order);
     }

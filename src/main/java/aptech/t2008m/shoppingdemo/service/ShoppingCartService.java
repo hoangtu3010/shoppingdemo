@@ -23,11 +23,13 @@ public class ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
+    private final AuthenticationService authenticationService;
 
-    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository, AccountRepository accountRepository) {
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository, AccountRepository accountRepository, AuthenticationService authenticationService) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.productRepository = productRepository;
         this.accountRepository = accountRepository;
+        this.authenticationService = authenticationService;
         this.modelMapper = new ModelMapper();
     }
 
@@ -91,6 +93,8 @@ public class ShoppingCartService {
             setCartItem.add(cartItem);
         }
         shoppingCart.setCartItems(setCartItem);
+        shoppingCart.setCreatedBy(authenticationService.getCurrentUser().getUser().getId());
+        shoppingCart.setUpdatedBy(authenticationService.getCurrentUser().getUser().getId());
         return shoppingCartRepository.save(shoppingCart);
     }
 

@@ -1,5 +1,6 @@
 package aptech.t2008m.shoppingdemo.entity;
 
+import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -17,7 +18,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "shopping_cart")
-public class ShoppingCart {
+public class ShoppingCart extends BaseEntity {
     @Id
     @GeneratedValue(generator = "shoppingCartId")
     @GenericGenerator(name = "shoppingCartId", parameters = {@Parameter(name = "prefix", value = "shopping_cart"), @Parameter(name = "tableName", value = "ShoppingCart")}, strategy = "aptech.t2008m.shoppingdemo.generator.IdGenerator")
