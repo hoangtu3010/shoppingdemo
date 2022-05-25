@@ -121,7 +121,7 @@ public class OrderService {
             orderDetail.setQuantity(cartItem.getQuantity());
             orderDetails.add(orderDetail);
 
-            cartItemRepository.deleteById(new CartItemId(existShoppingCart.getId(), existShoppingCart.getId()));
+            cartItemRepository.deleteById(new CartItemId(existShoppingCart.getId(), existProduct.getId()));
         }
 
         order.setOrderDetails(orderDetails);
