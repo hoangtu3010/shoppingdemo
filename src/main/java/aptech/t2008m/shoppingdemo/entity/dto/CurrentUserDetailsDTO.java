@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 public class CurrentUserDetailsDTO {
+    private String id;
     private String username;
     private Set<Roles> roles;
 }

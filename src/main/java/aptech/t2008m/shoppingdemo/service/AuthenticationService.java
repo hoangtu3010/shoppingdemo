@@ -61,6 +61,7 @@ public class AuthenticationService implements UserDetailsService {
         Account account = optionalAccount.get();
 
         CurrentUserDetailsDTO currentUserDetailsDTO = new CurrentUserDetailsDTO();
+        currentUserDetailsDTO.setId(account.getId());
         currentUserDetailsDTO.setUsername(account.getUserName());
         currentUserDetailsDTO.setRoles(account.getRoles());
 
