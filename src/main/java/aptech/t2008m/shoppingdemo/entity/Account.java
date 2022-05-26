@@ -2,7 +2,6 @@ package aptech.t2008m.shoppingdemo.entity;
 
 import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
 import aptech.t2008m.shoppingdemo.entity.enums.AccountStatus;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 

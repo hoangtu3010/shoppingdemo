@@ -1,13 +1,11 @@
 package aptech.t2008m.shoppingdemo.controller;
 
 import aptech.t2008m.shoppingdemo.entity.Account;
-import aptech.t2008m.shoppingdemo.entity.CurrentUserDetails;
 import aptech.t2008m.shoppingdemo.entity.Roles;
 import aptech.t2008m.shoppingdemo.entity.dto.CredentialDTO;
-import aptech.t2008m.shoppingdemo.repository.RolesRepository;
+import aptech.t2008m.shoppingdemo.entity.dto.CurrentUserDetailsDTO;
 import aptech.t2008m.shoppingdemo.service.AccountService;
 import aptech.t2008m.shoppingdemo.service.AuthenticationService;
-import aptech.t2008m.shoppingdemo.until.CurrentUser;
 import aptech.t2008m.shoppingdemo.until.JwtUtil;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +43,7 @@ public class AuthController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/user")
-    public ResponseEntity<CurrentUserDetails> getCurrentUser() {
+    public ResponseEntity<CurrentUserDetailsDTO> getCurrentUser() {
         if (authenticationService.getCurrentUser() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
