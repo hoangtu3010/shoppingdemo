@@ -1,6 +1,7 @@
 package aptech.t2008m.shoppingdemo.service;
 
 import aptech.t2008m.shoppingdemo.entity.Account;
+import aptech.t2008m.shoppingdemo.entity.CurrentUserDetails;
 import aptech.t2008m.shoppingdemo.entity.Roles;
 import aptech.t2008m.shoppingdemo.entity.dto.CurrentUserDetailsDTO;
 import aptech.t2008m.shoppingdemo.entity.enums.AccountStatus;
@@ -51,7 +52,7 @@ public class AuthenticationService implements UserDetailsService {
         return accountRepository.save(account);
     }
 
-    public CurrentUserDetailsDTO getCurrentUser(){
+    public CurrentUserDetails getCurrentUser(){
         Optional<Account> optionalAccount = accountRepository.findAccountByUserName(CurrentUser.getCurrentUser().getName());
 
         if (!optionalAccount.isPresent()){
@@ -65,6 +66,6 @@ public class AuthenticationService implements UserDetailsService {
         currentUserDetailsDTO.setUsername(account.getUserName());
         currentUserDetailsDTO.setRoles(account.getRoles());
 
-        return currentUserDetailsDTO;
+        return new CurrentUserDetails(currentUserDetailsDTO);
     }
 }

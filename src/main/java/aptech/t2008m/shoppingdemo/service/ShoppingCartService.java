@@ -93,8 +93,8 @@ public class ShoppingCartService {
             setCartItem.add(cartItem);
         }
         shoppingCart.setCartItems(setCartItem);
-        shoppingCart.setCreatedBy(authenticationService.getCurrentUser().getId());
-        shoppingCart.setUpdatedBy(authenticationService.getCurrentUser().getId());
+        shoppingCart.setCreatedBy(authenticationService.getCurrentUser().getUser().getId());
+        shoppingCart.setUpdatedBy(authenticationService.getCurrentUser().getUser().getId());
         return shoppingCartRepository.save(shoppingCart);
     }
 
