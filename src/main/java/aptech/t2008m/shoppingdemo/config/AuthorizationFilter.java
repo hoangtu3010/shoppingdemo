@@ -1,5 +1,6 @@
 package aptech.t2008m.shoppingdemo.config;
 
+import aptech.t2008m.shoppingdemo.repository.PermissionRepository;
 import aptech.t2008m.shoppingdemo.until.JwtUtil;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -22,7 +22,7 @@ import java.util.*;
 import static java.util.Arrays.stream;
 
 public class AuthorizationFilter extends OncePerRequestFilter {
-    private static final String[] IGNORE_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/token/refresh", "/hello"};
+    private static final String[] IGNORE_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/token/refresh"};
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

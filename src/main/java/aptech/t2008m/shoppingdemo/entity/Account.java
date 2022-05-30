@@ -6,7 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -23,7 +23,7 @@ public class Account extends BaseEntity {
     private String userName;
     private String passwordHash;
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    private Set<Roles> roles;
+    private Collection<Roles> roles;
     @Enumerated(EnumType.ORDINAL)
     private AccountStatus status;
 }

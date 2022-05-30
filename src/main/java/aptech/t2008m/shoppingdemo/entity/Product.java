@@ -3,6 +3,7 @@ package aptech.t2008m.shoppingdemo.entity;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.entity.base.BaseEntity;
 import aptech.t2008m.shoppingdemo.until.StringHelper;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -36,6 +37,7 @@ public class Product extends BaseEntity {
     private Integer categoryId;
     @ManyToOne
     @JoinColumn(name = "categoryId", insertable = false, updatable = false)
+    @JsonBackReference
     private Category category;
 //    @JsonManagedReference
 //    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

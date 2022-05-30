@@ -1,5 +1,6 @@
 package aptech.t2008m.shoppingdemo;
 
+import aptech.t2008m.shoppingdemo.service.PermissionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

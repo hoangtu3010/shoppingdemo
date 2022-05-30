@@ -19,14 +19,16 @@ public class DataSeeder implements CommandLineRunner {
     private final AccountRepository accountRepository;
     private final ShoppingCartRepository shoppingCartRepository;
     private final RolesRepository rolesRepository;
+    private final PermissionRepository permissionRepository;
 
-    public DataSeeder(CategoryRepository categoryRepository, OrderRepository orderRepository, ProductRepository productRepository, AccountRepository accountRepository, ShoppingCartRepository shoppingCartRepository, RolesRepository rolesRepository) {
+    public DataSeeder(CategoryRepository categoryRepository, OrderRepository orderRepository, ProductRepository productRepository, AccountRepository accountRepository, ShoppingCartRepository shoppingCartRepository, RolesRepository rolesRepository, PermissionRepository permissionRepository) {
         this.categoryRepository = categoryRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.accountRepository = accountRepository;
         this.shoppingCartRepository = shoppingCartRepository;
         this.rolesRepository = rolesRepository;
+        this.permissionRepository = permissionRepository;
     }
 
     public static List<String> fakeImages = new ArrayList<>();
@@ -55,14 +57,61 @@ public class DataSeeder implements CommandLineRunner {
         if (rolesRepository.findAll().isEmpty()){
             List<Roles> roles = new ArrayList<>();
 
+            Permission permission1 = new Permission();
+            permission1.setName("allow:admins");
+            permission1.setUrl("/api/v1/admins/**");
+
+            Permission permission2 = new Permission();
+            permission2.setName("read:orders");
+            permission2.setMethod("GET");
+            permission2.setUrl("/api/v1/orders");
+
+            Permission permission3 = new Permission();
+            permission3.setName("create:orders");
+            permission3.setMethod("POST");
+            permission3.setUrl("/api/v1/orders");
+
+            Permission permission4 = new Permission();
+            permission4.setName("read:shopping-cart");
+            permission4.setMethod("GET");
+            permission4.setUrl("/api/v1/shopping-cart");
+
+            Permission permission5 = new Permission();
+            permission5.setName("create:shopping-cart");
+            permission5.setMethod("POST");
+            permission5.setUrl("/api/v1/shopping-cart");
+
+            Set<Permission> permissionsAdmin = new HashSet<>();
+            permissionsAdmin.add(permission1);
+            permissionsAdmin.add(permission2);
+            permissionsAdmin.add(permission3);
+            permissionsAdmin.add(permission4);
+            permissionsAdmin.add(permission5);
+
+            Set<Permission> permissionsModerator = new HashSet<>();
+            permissionsModerator.add(permission1);
+            permissionsModerator.add(permission2);
+            permissionsModerator.add(permission3);
+            permissionsModerator.add(permission4);
+            permissionsModerator.add(permission5);
+
+            Set<Permission> permissionsUser = new HashSet<>();
+            permissionsUser.add(permission2);
+            permissionsUser.add(permission3);
+            permissionsUser.add(permission4);
+            permissionsUser.add(permission5);
+
             Roles role1 = new Roles();
             role1.setName("user");
+            role1.setPermissions(permissionsUser);
 
             Roles role2 = new Roles();
             role2.setName("admin");
+            role2.setPermissions(permissionsAdmin);
 
             Roles role3 = new Roles();
             role3.setName("moderator");
+            role3.setPermissions(permissionsModerator);
 
             roles.add(role1);
             roles.add(role2);

@@ -3,7 +3,7 @@ package aptech.t2008m.shoppingdemo.entity.dto;
 import aptech.t2008m.shoppingdemo.entity.Roles;
 import lombok.*;
 
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -13,5 +13,5 @@ import java.util.Set;
 public class CurrentUserDetailsDTO {
     private String id;
     private String username;
-    private Set<Roles> roles;
+    private Collection<Roles> roles;
 }

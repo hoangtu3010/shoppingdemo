@@ -1,11 +1,11 @@
 package aptech.t2008m.shoppingdemo.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -22,5 +22,7 @@ public class Roles {
     private String name;
     @ManyToMany(mappedBy = "roles")
     @JsonBackReference
-    private Set<Account> accounts;
+    private Collection<Account> accounts;
+    @ManyToMany(targetEntity = Permission.class, cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    private Collection<Permission> permissions;
 }
