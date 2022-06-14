@@ -1,13 +1,9 @@
 package aptech.t2008m.shoppingdemo.controller;
 
-import aptech.t2008m.shoppingdemo.entity.Category;
 import aptech.t2008m.shoppingdemo.entity.Permission;
-import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
-import aptech.t2008m.shoppingdemo.service.CategoryService;
 import aptech.t2008m.shoppingdemo.service.PermissionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,13 +25,11 @@ public class PermissionController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Permission> save(@RequestBody Permission permission) {
         return ResponseEntity.status(HttpStatus.CREATED).body(permissionService.save(permission));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Permission> update(@PathVariable Integer id, @RequestBody Permission permission) {
         Optional<Permission> optionalPermission = permissionService.findById(id);
 

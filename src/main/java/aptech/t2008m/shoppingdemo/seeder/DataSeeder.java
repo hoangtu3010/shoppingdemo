@@ -5,6 +5,7 @@ import aptech.t2008m.shoppingdemo.entity.enums.*;
 import aptech.t2008m.shoppingdemo.repository.*;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -20,8 +21,10 @@ public class DataSeeder implements CommandLineRunner {
     private final ShoppingCartRepository shoppingCartRepository;
     private final RolesRepository rolesRepository;
     private final PermissionRepository permissionRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataSeeder(CategoryRepository categoryRepository, OrderRepository orderRepository, ProductRepository productRepository, AccountRepository accountRepository, ShoppingCartRepository shoppingCartRepository, RolesRepository rolesRepository, PermissionRepository permissionRepository) {
+
+    public DataSeeder(CategoryRepository categoryRepository, OrderRepository orderRepository, ProductRepository productRepository, AccountRepository accountRepository, ShoppingCartRepository shoppingCartRepository, RolesRepository rolesRepository, PermissionRepository permissionRepository, PasswordEncoder passwordEncoder) {
         this.categoryRepository = categoryRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
@@ -29,6 +32,7 @@ public class DataSeeder implements CommandLineRunner {
         this.shoppingCartRepository = shoppingCartRepository;
         this.rolesRepository = rolesRepository;
         this.permissionRepository = permissionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public static List<String> fakeImages = new ArrayList<>();
@@ -54,46 +58,38 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedRoles() {
-        if (rolesRepository.findAll().isEmpty()){
+        if (rolesRepository.findAll().isEmpty()) {
             List<Roles> roles = new ArrayList<>();
 
             Permission permission1 = new Permission();
             permission1.setName("allow:admins");
-            permission1.setUrl("/api/v1/admins/**");
+            permission1.setUrl("/api/v1/admin/**");
 
             Permission permission2 = new Permission();
             permission2.setName("read:orders");
-            permission2.setMethod("GET");
+            permission2.setMethod(MethodsConstant.GET);
             permission2.setUrl("/api/v1/orders");
 
             Permission permission3 = new Permission();
             permission3.setName("create:orders");
-            permission3.setMethod("POST");
+            permission3.setMethod(MethodsConstant.POST);
             permission3.setUrl("/api/v1/orders");
 
             Permission permission4 = new Permission();
             permission4.setName("read:shopping-cart");
-            permission4.setMethod("GET");
+            permission4.setMethod(MethodsConstant.GET);
             permission4.setUrl("/api/v1/shopping-cart");
 
             Permission permission5 = new Permission();
             permission5.setName("create:shopping-cart");
-            permission5.setMethod("POST");
+            permission5.setMethod(MethodsConstant.POST);
             permission5.setUrl("/api/v1/shopping-cart");
 
             Set<Permission> permissionsAdmin = new HashSet<>();
             permissionsAdmin.add(permission1);
-            permissionsAdmin.add(permission2);
-            permissionsAdmin.add(permission3);
-            permissionsAdmin.add(permission4);
-            permissionsAdmin.add(permission5);
 
             Set<Permission> permissionsModerator = new HashSet<>();
             permissionsModerator.add(permission1);
-            permissionsModerator.add(permission2);
-            permissionsModerator.add(permission3);
-            permissionsModerator.add(permission4);
-            permissionsModerator.add(permission5);
 
             Set<Permission> permissionsUser = new HashSet<>();
             permissionsUser.add(permission2);
@@ -102,12 +98,12 @@ public class DataSeeder implements CommandLineRunner {
             permissionsUser.add(permission5);
 
             Roles role1 = new Roles();
-            role1.setName("user");
-            role1.setPermissions(permissionsUser);
+            role1.setName("admin");
+            role1.setPermissions(permissionsAdmin);
 
             Roles role2 = new Roles();
-            role2.setName("admin");
-            role2.setPermissions(permissionsAdmin);
+            role2.setName("user");
+            role2.setPermissions(permissionsUser);
 
             Roles role3 = new Roles();
             role3.setName("moderator");
@@ -124,21 +120,27 @@ public class DataSeeder implements CommandLineRunner {
     private void seedAccount() {
         if (accountRepository.findAll().isEmpty()) {
             List<Account> accounts = new ArrayList<>();
-            List<Roles> rolesList = rolesRepository.findAll();
 
-            for (int i = 0; i < 5; i++) {
-                Set<Roles> roles = new HashSet<>();
-                int rolesNumber = faker.number().numberBetween(1, rolesList.size());
-                for (int j = 0; j < rolesNumber; j++){
-                    roles.add(rolesList.get(faker.number().numberBetween(0, rolesList.size() - 1)));
-                }
+            Account accountUser = new Account();
+            accountUser.setUserName("user");
+            accountUser.setPasswordHash(passwordEncoder.encode("abc123@"));
+            accountUser.setRoles(Collections.singletonList(rolesRepository.findByName("user").get()));
+            accountUser.setStatus(AccountStatus.ACTIVE);
+            accounts.add(accountUser);
 
-                Account account = new Account();
-                account.setUserName(faker.name().username());
-                account.setRoles(roles);
-                account.setStatus(AccountStatus.ACTIVE);
-                accounts.add(account);
-            }
+            Account accountAdmin = new Account();
+            accountAdmin.setUserName("admin");
+            accountAdmin.setPasswordHash(passwordEncoder.encode("abc123@"));
+            accountAdmin.setRoles(rolesRepository.findAll());
+            accountAdmin.setStatus(AccountStatus.ACTIVE);
+            accounts.add(accountAdmin);
+
+            Account accountModerator = new Account();
+            accountModerator.setUserName("mod");
+            accountModerator.setPasswordHash(passwordEncoder.encode("abc123@"));
+            accountModerator.setRoles(Collections.singletonList(rolesRepository.findByName("moderator").get()));
+            accountModerator.setStatus(AccountStatus.ACTIVE);
+            accounts.add(accountModerator);
 
             accountRepository.saveAll(accounts);
         }
@@ -167,7 +169,7 @@ public class DataSeeder implements CommandLineRunner {
             for (int i = 0; i < 100; i++) {
                 Product product = new Product();
                 product.setName(faker.name().title());
-                product.setThumbnail(fakeImages.get(faker.number().numberBetween(0, fakeImages.size()-1)));
+                product.setThumbnail(fakeImages.get(faker.number().numberBetween(0, fakeImages.size() - 1)));
                 product.setDescription(faker.lorem().sentence());
                 product.setPrice(new BigDecimal(faker.number().numberBetween(1, 999)));
                 product.setCategoryId(categories.get(faker.number().numberBetween(0, categories.size() - 1)).getId());

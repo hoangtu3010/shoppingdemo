@@ -1,14 +1,12 @@
 package aptech.t2008m.shoppingdemo.controller;
 
-import aptech.t2008m.shoppingdemo.entity.Permission;
 import aptech.t2008m.shoppingdemo.entity.Roles;
-import aptech.t2008m.shoppingdemo.service.PermissionService;
 import aptech.t2008m.shoppingdemo.service.RolesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +25,18 @@ public class RolesController {
         return ResponseEntity.ok(rolesService.findAll());
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/findBy")
+    public ResponseEntity<List<Roles>> findAllByNameIn(){
+        String[] roles = {"user", "admin"};
+        return ResponseEntity.ok(rolesService.findAllByNameIn(roles));
+    }
+
     @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Roles> save(@RequestBody Roles roles) {
         return ResponseEntity.status(HttpStatus.CREATED).body(rolesService.save(roles));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Roles> update(@PathVariable String id, @RequestBody Roles roles) {
         Optional<Roles> optionalRoles = rolesService.findById(id);
 

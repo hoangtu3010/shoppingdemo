@@ -27,6 +27,10 @@ public class RolesService {
         return rolesRepository.save(roles);
     }
 
+    public List<Roles> findAllByNameIn(String[] roles) {
+        return rolesRepository.findAllByNameIn(roles);
+    }
+
     public void deleteById(String id) {
         rolesRepository.deleteById(id);
     }

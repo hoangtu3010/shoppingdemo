@@ -37,7 +37,6 @@ public class Product extends BaseEntity {
     private Integer categoryId;
     @ManyToOne
     @JoinColumn(name = "categoryId", insertable = false, updatable = false)
-    @JsonBackReference
     private Category category;
 //    @JsonManagedReference
 //    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

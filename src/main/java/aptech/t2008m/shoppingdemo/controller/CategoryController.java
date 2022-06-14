@@ -1,14 +1,10 @@
 package aptech.t2008m.shoppingdemo.controller;
 
 import aptech.t2008m.shoppingdemo.entity.Category;
-import aptech.t2008m.shoppingdemo.entity.Product;
 import aptech.t2008m.shoppingdemo.entity.enums.ProductStatus;
 import aptech.t2008m.shoppingdemo.service.CategoryService;
-import aptech.t2008m.shoppingdemo.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,14 +26,12 @@ public class CategoryController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Category> save(@RequestBody Category category) {
         category.setStatus(ProductStatus.ACTIVE);
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(category));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Category> update(@PathVariable Integer id, @RequestBody Category category) {
         Optional<Category> optionalCategory = categoryService.findById(id);
 
@@ -64,7 +58,6 @@ public class CategoryController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
         Optional<Category> optionalCategory = categoryService.findById(id);
 

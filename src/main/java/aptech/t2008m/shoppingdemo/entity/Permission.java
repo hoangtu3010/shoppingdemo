@@ -1,5 +1,7 @@
 package aptech.t2008m.shoppingdemo.entity;
 
+import aptech.t2008m.shoppingdemo.entity.enums.MethodsConstant;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -19,8 +21,9 @@ public class Permission {
     private Integer id;
     private String name;
     private String url;
-    private String method;
-    @ManyToMany(targetEntity = Roles.class, mappedBy = "permissions", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("permissions")
+    @Enumerated(EnumType.ORDINAL)
+    private MethodsConstant method;
+    @ManyToMany(mappedBy = "permissions")
+    @JsonBackReference
     private Collection<Roles> roles;
 }

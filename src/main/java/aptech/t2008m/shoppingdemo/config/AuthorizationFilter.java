@@ -1,6 +1,10 @@
 package aptech.t2008m.shoppingdemo.config;
 
+import aptech.t2008m.shoppingdemo.entity.Permission;
+import aptech.t2008m.shoppingdemo.entity.Roles;
 import aptech.t2008m.shoppingdemo.repository.PermissionRepository;
+import aptech.t2008m.shoppingdemo.service.PermissionService;
+import aptech.t2008m.shoppingdemo.service.RolesService;
 import aptech.t2008m.shoppingdemo.until.JwtUtil;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +27,12 @@ import static java.util.Arrays.stream;
 
 public class AuthorizationFilter extends OncePerRequestFilter {
     private static final String[] IGNORE_PATHS = {"/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/token/refresh"};
+
+    private final RolesService rolesService;
+
+    public AuthorizationFilter(RolesService rolesService) {
+        this.rolesService = rolesService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -47,9 +57,19 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-            stream(roles).forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority(role));
-            });
+            List<Roles> rolesList = rolesService.findAllByNameIn(roles);
+
+//            stream(roles).forEach(role -> {
+//                authorities.add(new SimpleGrantedAuthority(role));
+//            });
+
+            for (Roles role :
+                    rolesList) {
+                for (Permission permission :
+                        role.getPermissions()) {
+                    authorities.add(new SimpleGrantedAuthority(permission.getName()));
+                }
+            }
 
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(username, null, authorities);

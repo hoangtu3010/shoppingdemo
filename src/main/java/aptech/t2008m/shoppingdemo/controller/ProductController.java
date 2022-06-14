@@ -6,7 +6,6 @@ import aptech.t2008m.shoppingdemo.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -22,7 +21,6 @@ public class ProductController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-//    @PreAuthorize("hasAuthority('user')")
     public ResponseEntity<Page<Product>> getPage(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") Integer categoryId,
@@ -34,14 +32,12 @@ public class ProductController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Product> save(@RequestBody Product product) {
         product.setStatus(ProductStatus.ACTIVE);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Product> update(@PathVariable String id, @RequestBody Product product) {
         Optional<Product> optionalProduct = productService.findById(id);
 
@@ -68,7 +64,6 @@ public class ProductController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")
-//  @PreAuthorize("hasAuthority('user')")
     public ResponseEntity<Product> findById(@PathVariable String id) {
         Optional<Product> optionalProduct = productService.findById(id);
 
@@ -80,7 +75,6 @@ public class ProductController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Boolean> delete(@PathVariable String id) {
         Optional<Product> optionalProduct = productService.findById(id);
 

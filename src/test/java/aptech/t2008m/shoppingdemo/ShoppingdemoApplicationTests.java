@@ -17,11 +17,6 @@ class ShoppingdemoApplicationTests {
     }
 
     public static void main(String[] args) {
-        String[] roleStr = new String[2];
 
-        roleStr[0] = "admin";
-        roleStr[1] = "user";
-
-        System.out.println(roleStr);
     }
 }

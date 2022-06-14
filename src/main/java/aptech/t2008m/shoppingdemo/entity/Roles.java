@@ -23,6 +23,7 @@ public class Roles {
     @ManyToMany(mappedBy = "roles")
     @JsonBackReference
     private Collection<Account> accounts;
-    @ManyToMany(targetEntity = Permission.class, cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Collection<Permission> permissions;
 }
